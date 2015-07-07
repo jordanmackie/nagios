@@ -90,6 +90,6 @@ function EvaluateCheckResults {
         else {$exitcode = 2}
             
 return $exitcode
-}s
+}
 
 exit EvaluateCheckResults
