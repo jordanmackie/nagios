@@ -152,21 +152,24 @@ ForEach ( $Stat in $ScopeStatsOutput ) {
 }
 
 #Check DhcpFailoverAutoConfigSyncTool status
-    if (Get-ScheduledTask -TaskName DhcpFailoverAutoConfigSyncTool -ErrorAction SilentlyContinue) {
+if (Get-ScheduledTask -TaskName DhcpFailoverAutoConfigSyncTool -ErrorAction Ignore) {
     if (((Get-ScheduledTask -TaskName DhcpFailoverAutoConfigSyncTool)).State -eq "Running") {
         #Write-Host "OK : DhcpFailoverAutoConfigSyncTool scheduled task is in a 'Running' state"
         $TaskExitCode = 0
-        }
+    }
     else {
         Write-Host "CRITICAL : DhcpFailoverAutoConfigSyncTool scheduled task is not in a 'Running' state"
         $TaskExitCode = 2
-        }
-        }
-    else {}
-    if (( $TaskExitCode -eq 0 ) -and ( $exitcode -eq 0 )) { $exitcode = 0 }
-    if (( $TaskExitCode -eq 2 ) -and ( $exitcode -le 2 )) { $exitcode = 2 }
+    }
+}
+else {
+    Write-Host "CRITICAL : DhcpFailoverAutoConfigSyncTool scheduled task was not found"
+    $TaskExitCode = 2
+}
+if (( $TaskExitCode -eq 0 ) -and ( $exitcode -eq 0 )) { $exitcode = 0 }
+if (( $TaskExitCode -eq 2 ) -and ( $exitcode -le 2 )) { $exitcode = 2 }
 
 #Evaluate final exit code result for all passed checks.
-    if ($exitcode -eq 0) {Write-Host "OK : Failover state, failover mode, scope states, scope statistics, and DHCP config sync tool are operating within bounds."}
+if ($exitcode -eq 0) {Write-Host "OK : Failover state, failover mode, scope states, scope statistics, and DHCP config sync tool are operating within bounds."}
     
 exit $exitcode
